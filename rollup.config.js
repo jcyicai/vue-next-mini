@@ -12,15 +12,14 @@ export default [
     output: [
       // 导出 iife 格式
       {
-        // 开启 sourceMap
-        sourceMap: true,
+        // 开启 sourcemap
+        sourcemap: true,
         // 导出文件地址
         file: './packages/vue/dist/vue.js',
         // 生成包的格式
         format: 'iife',
         // 变量名
-        name: 'Vue',
-        sourcemap: true
+        name: 'Vue'
       }
     ],
     // 插件
