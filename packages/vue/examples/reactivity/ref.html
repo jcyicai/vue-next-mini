@@ -9,17 +9,17 @@
     <div id="app"></div>
     <script src="../../dist/vue.js"></script>
     <script>
-      const { reactive, effect } = Vue
-      const obj = reactive({
+      const { ref, effect } = Vue
+      const obj = ref({
         name: 'jc'
       })
 
       effect(() => {
-        document.querySelector('#app').innerHTML = obj.name
+        document.querySelector('#app').innerHTML = obj.value.name
       })
 
       setTimeout(() => {
-        obj.name = 'cc'
+        obj.value.name = 'cc'
       }, 2000)
     </script>
   </body>

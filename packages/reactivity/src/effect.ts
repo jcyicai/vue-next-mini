@@ -85,7 +85,7 @@ export function trigger(target: object, key: unknown, newValue: unknown) {
  * 依次触发 dep 中保存的依赖
  */
 export function triggerEffects(dep: Dep) {
-  const effects = Array.isArray(dep) ? dep : [...dep]
+  const effects = isArray(dep) ? dep : [...dep]
   // 依次触发依赖
   for (const effect of effects) {
     triggerEffect(effect)
