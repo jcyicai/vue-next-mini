@@ -8,3 +8,7 @@ export const isObject = (val: unknown) => {
 export const hasChanged = (value: any, oldValue: any): boolean => {
   return !Object.is(value, oldValue)
 }
+// 是否是函数
+export const isFunction = (val: unknown): val is Function => {
+  return typeof val === 'function'
+}

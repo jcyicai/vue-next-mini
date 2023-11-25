@@ -1,5 +1,8 @@
 import { isArray } from '@vue/shared'
 import { Dep, createDep } from './dep'
+import { ComputedRefImpl } from './computed'
+
+export type EffectScheduler = (...args: any[]) => any
 
 type KeyToDepMap = Map<any, Dep>
 /**
@@ -19,7 +22,12 @@ export function effect<T = any>(fn: () => T) {
 export let activeEffect: ReactiveEffect | undefined
 
 export class ReactiveEffect<T = any> {
-  constructor(public fn: () => T) {}
+  computed?: ComputedRefImpl<T>
+
+  constructor(
+    public fn: () => T,
+    public scheduler: EffectScheduler | null = null
+  ) {}
 
   run() {
     activeEffect = this
@@ -41,8 +49,9 @@ export function track(target: object, key: unknown) {
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()))
   }
-
+  // 获取指定 key 的 dep
   let dep = depsMap.get(key)
+  // 如果 dep 不存在，则生成一个新的 dep，并放入到 depsMap 中
   if (!dep) {
     depsMap.set(key, (dep = createDep()))
   }
@@ -86,9 +95,19 @@ export function trigger(target: object, key: unknown, newValue: unknown) {
  */
 export function triggerEffects(dep: Dep) {
   const effects = isArray(dep) ? dep : [...dep]
-  // 依次触发依赖
+
+  // 不在依次触发，而是先触发所有的计算属性依赖，再触发所有的非计算属性依赖
+  // 否则会造成死循环 原因是 后面执行的 effect 是存在 computed 计算属性
+  // 计算属性中又存在 scheduler 调度器，再次触发脏状态，再次执行 triggerRefValue 从而造成死循环
   for (const effect of effects) {
-    triggerEffect(effect)
+    if (effect.computed) {
+      triggerEffect(effect)
+    }
+  }
+  for (const effect of effects) {
+    if (!effect.computed) {
+      triggerEffect(effect)
+    }
   }
 }
 
@@ -96,5 +115,9 @@ export function triggerEffects(dep: Dep) {
  * 触发指定依赖
  */
 export function triggerEffect(effect: ReactiveEffect) {
-  effect.run()
+  if (effect.scheduler) {
+    effect.scheduler()
+  } else {
+    effect.run()
+  }
 }
