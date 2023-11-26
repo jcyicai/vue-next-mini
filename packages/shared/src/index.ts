@@ -12,3 +12,7 @@ export const hasChanged = (value: any, oldValue: any): boolean => {
 export const isFunction = (val: unknown): val is Function => {
   return typeof val === 'function'
 }
+// 合并
+export const extend = Object.assign
+// 空对象
+export const EMPTY_OBJ: { readonly [key: string]: any } = {}

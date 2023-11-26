@@ -62,6 +62,7 @@ export function trackRefValue(ref) {
   }
 }
 
+// 是否 ref 类型
 export function isRef(r: any): r is Ref {
   return !!(r && r.__v_isRef === true)
 }
