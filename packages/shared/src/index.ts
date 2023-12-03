@@ -12,6 +12,9 @@ export const hasChanged = (value: any, oldValue: any): boolean => {
 export const isFunction = (val: unknown): val is Function => {
   return typeof val === 'function'
 }
+// 是否字符串
+export const isString = (val: unknown): val is string => typeof val === 'string'
+
 // 合并
 export const extend = Object.assign
 // 空对象
