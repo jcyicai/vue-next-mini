@@ -9,5 +9,11 @@ export const nodeOps = {
   },
   setElementText: (el: Element, text) => {
     el.textContent = text
+  },
+  remove: (child: Element) => {
+    const parent = child.parentNode
+    if (parent) {
+      parent.removeChild(child)
+    }
   }
 }

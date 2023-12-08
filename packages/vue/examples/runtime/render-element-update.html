@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    .active {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="../../dist/vue.js"></script>
+  <script>
+    const { h, render } = Vue
+
+    const vnode = h(
+      'div',
+      {
+        class: 'test'
+      },
+      'hello render'
+    )
+
+    render(vnode, document.querySelector('#app'))
+
+    setTimeout(() => {
+      const vnode2 = h(
+        'div',
+        {
+          class: 'active'
+        },
+        'update'
+      )
+      // 测试 props 为空情况
+      /*  const vnode2 = h(
+         'div',
+         'update'
+       ) */
+
+      render(vnode2, document.querySelector('#app'))
+    }, 2000)
+  </script>
+</body>
+
+</html>

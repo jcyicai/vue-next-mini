@@ -12,6 +12,7 @@ export interface VNode {
   props: any
   children: any
   shapeFlag: number
+  key: any
 }
 
 // 判断是否为 vnode
@@ -73,4 +74,9 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
 
   vnode.children = children
   vnode.shapeFlag |= type // 按位或赋值 此时为 9
+}
+
+// 节点类型是否相同
+export function isSameVNodeType(n1: VNode, n2: VNode) {
+  return n1.type === n2.type && n1.key === n2.key
 }
