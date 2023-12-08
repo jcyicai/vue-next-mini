@@ -19,3 +19,7 @@ export const isString = (val: unknown): val is string => typeof val === 'string'
 export const extend = Object.assign
 // 空对象
 export const EMPTY_OBJ: { readonly [key: string]: any } = {}
+
+// 是否 on 开头事件
+const onRE = /^on[^a-z]/
+export const isOn = (key: string) => onRE.test(key)
