@@ -1,6 +1,7 @@
 import { ShapeFlags } from 'packages/shared/src/shapeFlags'
 import { Comment, Fragment, Text, isSameVNodeType } from './vnode'
-import { EMPTY_OBJ } from '@vue/shared'
+import { EMPTY_OBJ, isString } from '@vue/shared'
+import { normalizeVNode } from './componentRenderUtils'
 
 export interface RendererOptions {
   // 为指定的 element 的 props 打补丁
@@ -13,6 +14,12 @@ export interface RendererOptions {
   createElement(type: string)
   // 移除 Element
   remove(el: Element)
+  // 创建 Text
+  createText(text: string)
+  // 设置 Text
+  setText(node, text)
+  // 创建 Comment
+  createComment(text: string)
 }
 
 export function createRenderer(options: RendererOptions) {
@@ -25,8 +32,43 @@ function baseCreateRenderer(options: RendererOptions): any {
     patchProp: hostPatchProp,
     createElement: hostCreateElement,
     setElementText: hostSetElementText,
-    remove: hostRemove
+    remove: hostRemove,
+    createText: hostCreateText,
+    setText: hostSetText,
+    createComment: hostCreateComment
   } = options
+
+  // Fragment 类型
+  const processFragment = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      mountChildren(newVNode.children, container, anchor)
+    } else {
+      patchChildren(oldVNode, newVNode, container, anchor)
+    }
+  }
+
+  // Comment 类型
+  const processCommentNode = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      newVNode.el = hostCreateComment(newVNode.children)
+      hostInsert(newVNode.el, container, anchor)
+    } else {
+      newVNode.el = oldVNode.el
+    }
+  }
+
+  // Text 类型
+  const processText = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      newVNode.el = hostCreateText(newVNode.children)
+      hostInsert(newVNode.el, container, anchor)
+    } else {
+      const el = (newVNode.el = oldVNode.el!)
+      if (newVNode.children !== oldVNode.children) {
+        hostSetText(el, newVNode.children)
+      }
+    }
+  }
 
   const processElement = (oldVNode, newVNode, container, anchor) => {
     if (oldVNode == null) {
@@ -67,6 +109,18 @@ function baseCreateRenderer(options: RendererOptions): any {
     patchChildren(oldVNode, newVNode, el, null)
     // 更新 prop
     patchProps(el, newVNode, oldProps, newProps)
+  }
+
+  const mountChildren = (children, container, anchor) => {
+    // 如果 children 是字符串就切割为数组
+    if (isString(children)) {
+      children = children.split('')
+    }
+
+    for (let i = 0; i < children.length; i++) {
+      const child = (children[i] = normalizeVNode(children[i]))
+      patch(null, child, container, anchor)
+    }
   }
 
   const patchChildren = (oldVNode, newVNode, container, anchor) => {
@@ -146,10 +200,13 @@ function baseCreateRenderer(options: RendererOptions): any {
 
     switch (type) {
       case Text:
+        processText(oldVNode, newVNode, container, anchor)
         break
       case Comment:
+        processCommentNode(oldVNode, newVNode, container, anchor)
         break
       case Fragment:
+        processFragment(oldVNode, newVNode, container, anchor)
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
