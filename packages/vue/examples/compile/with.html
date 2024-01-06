@@ -1,0 +1,15 @@
+<script>
+  function render(_ctx) {
+    with (_ctx) {
+      console.log(msg)
+    }
+  }
+
+  const data = {
+    msg: 'world'
+  }
+
+  // 将 render 指向 data ，并将 data 作为参数传入，此时的 msg 就取 data.msg
+  render.call(data, data)
+  // render.call(data)
+</script>

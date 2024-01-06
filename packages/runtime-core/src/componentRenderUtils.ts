@@ -2,7 +2,7 @@ import { ShapeFlags } from 'packages/shared/src/shapeFlags'
 import { Text, createVNode } from './vnode'
 
 export function renderComponentRoot(instance) {
-  const { vnode, render, data } = instance
+  const { vnode, render, data = {} } = instance
 
   let result
 

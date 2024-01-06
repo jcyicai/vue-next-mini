@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      const { compile, h, render } = Vue
+      // 复合表达式
+      const template = `<div>hello world<h1 v-if="isShow">你好，世界</h1></div>`
+
+      const renderFn = compile(template)
+      console.log(renderFn)
+
+      const component = {
+        data() {
+          return {
+            isShow: false
+          }
+        },
+        render: renderFn
+      }
+
+      const vnode = h(component)
+
+      render(vnode, document.querySelector('#app'))
+    </script>
+  </body>
+</html>

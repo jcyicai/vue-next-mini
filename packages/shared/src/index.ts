@@ -1,3 +1,5 @@
+export { toDisplayString } from './toDisplayString'
+
 // 是否为数组
 export const isArray = Array.isArray
 // 是否为对象
